@@ -1,0 +1,31 @@
+body {
+background-color: rgb(137, 214, 224);
+width : 100%;
+}
+.tweetarea{
+  background-color: rgba(0, 0, 255, 0.5);
+  position: fixed;            /* ヘッダーの固定 */
+  top: 0px;                   /* 位置(上0px) */
+  left: 0px;                  /* 位置(右0px) */
+  width: 200px;                /* 横幅100%　*/
+  height: 100%;              /* 縦幅140px */
+}
+.posttweetbutton{
+  position: relative;
+  top: 0%;
+  left: 0%;
+
+  width: 50px;
+  background-color: white;
+}
+
+.tlarea{
+  clear:both;
+  position: relative;
+  top: 0%;
+  left: 200px;
+}
+
+.timeline{
+  background-color: rgb(170, 186, 255)
+}
