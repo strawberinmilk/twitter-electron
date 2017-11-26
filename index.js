@@ -1,43 +1,87 @@
 "use strict";
-function escape( str )
-{
-    if( str == null ) return '';
-    str = str.toString();
-    str = str.replace( /&/g,'&amp;' );
-    str = str.replace( /</g,'&lt;' );
-    str = str.replace( />/g,'&gt;' );
-    str = str.replace( / /g,'&nbsp;' );
-    str = str.replace( /\t/g,'&nbsp;&nbsp;&nbsp;&nbsp;' ); // Tabをスペース4つに..
-    str = str.replace( /\r?\n/g, "<br />\n");
-    return str;
+function escape(str) {
+	if (str == null) return '';
+	str = str.toString();
+	str = str.replace(/&/g, '&amp;');
+	str = str.replace(/</g, '&lt;');
+	str = str.replace(/>/g, '&gt;');
+	str = str.replace(/ /g, '&nbsp;');
+	str = str.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;'); // Tabをスペース4つに..
+	str = str.replace(/\r?\n/g, "<br />\n");
+	return str;
 }
-
+let replyid
 function makeDom(tltext) {
 	let div = document.createElement('div');
 	div.className = "timeline";
 	let text0 = document.createElement("p");
 	let text1 = document.createElement("p");
 	let text2 = document.createElement("p");
-	let text3 = document.createElement("p");
+	let reply = document.createElement("button");
+	let rt = document.createElement("button");
+	let fav = document.createElement("button");
+	let copy = document.createElement("button");
+
 	text0.innerHTML = escape(tltext[0]);
 	text1.innerHTML = escape(tltext[1]);
 	text2.innerHTML = escape(tltext[2]);
-	text3.innerHTML = escape(tltext[3]);
+	text2.innerHTML += "<br>";
+	text2.innerHTML += escape(tltext[3]);
+
+	reply.innerHTML = "reply";
+	reply.onclick = function () {
+		document.getElementById("posttweettext").value = "@"+escape(tltext[5]) + " "
+		replyid = [tltext[4],tltext[5]]
+		document.getElementById("mode").innerHTML = "reply"
+	};
+
+	rt.innerHTML = "RT";
+	rt.onclick = function () {
+		key.post('statuses/retweet/' + tltext[4] + '.json',
+			function (error) {
+				if (error) {
+					window.alert("RT error")
+				};
+			}
+		);
+	}
+
+	fav.innerHTML = "fav";
+	fav.onclick = function () {
+		key.post('favorites/create.json?id=' + tltext[4] + "&include_entities=true",
+			function (error) {
+				if (error) {
+					window.alert("Fav error")
+				}
+			}
+		)
+	}
+
+
+	copy.innerHTML = "copy"
+	copy.onclick = function () {
+		document.getElementById("posttweettext").value = tltext[1]
+	}
+
 	div.appendChild(text0);
 	div.appendChild(text1);
 	div.appendChild(text2);
-	div.appendChild(text3);	
+	div.appendChild(reply);
+	div.appendChild(rt);
+	div.appendChild(fav);
+	div.appendChild(copy);
 
 	let tlarea = document.getElementById("tlarea");
 	tlarea.insertBefore(div, tlarea.firstChild);
 }
 
+//makeDom(["a", "b", "c", "d", "e","f"])
 
 const twitter = require("twitter")
 const fs = require("fs")
 let key = fs.readFileSync(__dirname + "/key.txt", "utf8");
 if (key === "") {
-	console.log("https://apps.twitter.com/ からapi-keyを取得し,keyset.jsを使用してキーを登録してください。");
+	window.alert("https://apps.twitter.com/ からapi-keyを取得し,keyset.jsを使用してキーを登録してください。");
 	process.exit();
 } else {
 	key = key.split(",");
@@ -60,11 +104,20 @@ tweetbutton.onclick = function (){
 	sendTweet()
 }
 
+let replycansel = document.getElementById("replycansel")
+replycansel.onclick = function (){
+	replyid = undefined
+	document.getElementById("mode").innerHTML = "tweet"
+	document.getElementById("posttweettext").value = ""
+}
+
 
 function sendTweet() {
-
+	if(replyid===undefined){
+		
 	key.post('statuses/update',
-		{ status: document.getElementById("posttweettext").value },
+
+	{ status: document.getElementById("posttweettext").value },
 		function (error, tweet, response) {
 			if (error) {
 				window.alert("tweet error")
@@ -72,7 +125,19 @@ function sendTweet() {
 		document.getElementById("posttweettext").value = ""
 		
 		});
-
+	}else{
+		key.post('statuses/update',
+		{ status: document.getElementById("posttweettext").value , in_reply_to_status_id: replyid[0] },
+		function (error, tweet, response) {
+			if (error) {
+				window.alert("reply error")
+			};
+			replyid = undefined;
+	document.getElementById("mode").innerHTML = "tweet"
+			document.getElementById("posttweettext").value = ""
+		}
+	);
+	}
 }
 key.stream('user', function (stream) {
 
@@ -88,6 +153,7 @@ key.stream('user', function (stream) {
 		temp.push("via " + tmp)
 		temp.push(data.user.created_at)
 		temp.push(data.id_str)
+		temp.push(data.user.screen_name)
 		makeDom(temp)
 	})
 })
