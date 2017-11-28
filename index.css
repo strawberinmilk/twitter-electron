@@ -27,5 +27,6 @@ width : 100%;
 }
 
 .timeline{
-  background-color: rgb(170, 186, 255)
+  background-color: rgb(170, 186, 255);
+  width: calc(100% - 210px);
 }

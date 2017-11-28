@@ -105,7 +105,7 @@ function makeDom(tltext) {
 	tlarea.insertBefore(div, tlarea.firstChild);
 }
 
-//akeDom(["a", "b", "c", "d", "e", "f", , "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", , "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"])
+makeDom(["a", "b", "c", "d", "e", "f", , "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", , "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"])
 
 const twitter = require("twitter")
 const fs = require("fs")
@@ -123,19 +123,19 @@ if (key === "") {
 	});
 };
 
-document.onkeydown = function(e){
-	if(e.ctrlKey==true&&e.keyCode==13){
+document.onkeydown = function (e) {
+	if (e.ctrlKey == true && e.keyCode == 13) {
 		sendTweet()
 	}
 }
 
 let tweetbutton = document.getElementById("posttweetbutton")
-tweetbutton.onclick = function (){
+tweetbutton.onclick = function () {
 	sendTweet()
 }
 
 let replycansel = document.getElementById("replycansel")
-replycansel.onclick = function (){
+replycansel.onclick = function () {
 	replyid = undefined
 	document.getElementById("mode").innerHTML = "tweet"
 	document.getElementById("posttweettext").value = ""
@@ -143,30 +143,30 @@ replycansel.onclick = function (){
 
 
 function sendTweet() {
-	if(replyid===undefined){
-		
-	key.post('statuses/update',
+	if (replyid === undefined) {
 
-	{ status: document.getElementById("posttweettext").value },
-		function (error, tweet, response) {
-			if (error) {
-				window.alert("tweet error")
-			};
-		document.getElementById("posttweettext").value = ""
-		
-		});
-	}else{
 		key.post('statuses/update',
-		{ status: document.getElementById("posttweettext").value , in_reply_to_status_id: replyid[0] },
-		function (error, tweet, response) {
-			if (error) {
-				window.alert("reply error")
-			};
-			replyid = undefined;
-	document.getElementById("mode").innerHTML = "tweet"
-			document.getElementById("posttweettext").value = ""
-		}
-	);
+
+			{ status: document.getElementById("posttweettext").value },
+			function (error, tweet, response) {
+				if (error) {
+					window.alert("tweet error")
+				};
+				document.getElementById("posttweettext").value = ""
+
+			});
+	} else {
+		key.post('statuses/update',
+			{ status: document.getElementById("posttweettext").value, in_reply_to_status_id: replyid[0] },
+			function (error, tweet, response) {
+				if (error) {
+					window.alert("reply error")
+				};
+				replyid = undefined;
+				document.getElementById("mode").innerHTML = "tweet"
+				document.getElementById("posttweettext").value = ""
+			}
+		);
 	}
 }
 key.stream('user', function (stream) {
@@ -184,6 +184,23 @@ key.stream('user', function (stream) {
 		temp.push(data.user.created_at)
 		temp.push(data.id_str)
 		temp.push(data.user.screen_name)
+		try {
+			temp.push(data.extended_entities.media[0].media_url_https)
+		} catch (e) {
+		}
+		try {
+			temp.push(data.extended_entities.media[1].media_url_https)
+		} catch (e) {
+		}
+		try {
+			temp.push(data.extended_entities.media[2].media_url_https)
+		} catch (e) {
+		}
+		try {
+			temp.push(data.extended_entities.media[3].media_url_https)
+		} catch (e) {
+		}
+
 		makeDom(temp)
 	})
 })
