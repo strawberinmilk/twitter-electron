@@ -29,7 +29,7 @@ function makeDom(tltext) {
 	let img3 = document.createElement("img");
 	let img4 = document.createElement("img");
 	let video = document.createElement("video");
-	
+
 
 	icon.src = `http://furyu.nazo.cc/twicon/${tltext[5]}/bigger`
 	text0.innerHTML = `${escape(tltext[0])}<br>@${escape(tltext[5])}<br clear="left">`;
@@ -38,40 +38,49 @@ function makeDom(tltext) {
 	text2.innerHTML += "<br>";
 	text2.innerHTML += escape(tltext[3]);
 
-	div.appendChild(icon);	
+	div.appendChild(icon);
 	div.appendChild(text0);
 	div.appendChild(text1);
 	div.appendChild(text2);
 
 	//画像orビデオ
-	if(tltext[6] =="pic"){
+	switch (tltext[6]) {
+		case "pic":
 		let temp = tltext[7]
-			if (temp[0]) {
+		if (temp[0]) {
 				img1.src = temp[0]
 				img1.className = "pic"
-			div.appendChild(img1);
-			
+				div.appendChild(img1);
+
 			}
 			if (temp[1]) {
 				img2.src = temp[1]
 				img2.className = "pic"
-			div.appendChild(img2);
-			
+				div.appendChild(img2);
+
 			}
 			if (temp[2]) {
 				img3.src = temp[2]
 				img3.className = "pic"
+				div.appendChild(img3);
+
 
 			}
 			if (temp[3]) {
 				img4.src = temp[3]
 				img4.className = "pic"
-			div.appendChild(img4);
-			
-			}
-		}
+				div.appendChild(img4);
 
-		//ボタン生成
+			}
+			break;
+		case "video":		
+			video.src = tltext[7];
+			video.setAttribute("controls","");
+			div.appendChild(video);
+			break;
+	}
+
+	//ボタン生成
 	reply.innerHTML = "reply";
 	reply.onclick = function () {
 		document.getElementById("posttweettext").value = "@" + escape(tltext[5]) + " "
@@ -104,19 +113,19 @@ function makeDom(tltext) {
 	copy.innerHTML = "copy"
 	copy.onclick = function () {
 		document.getElementById("posttweettext").value = tltext[1]
-		if(document.getElementById("copytweet").checked){
+		if (document.getElementById("copytweet").checked) {
 			setTimeout(() => {
 				sendTweet()
 			}, 20);
 		}
-		if(document.getElementById("copyfav").checked){
+		if (document.getElementById("copyfav").checked) {
 			key.post('favorites/create.json?id=' + tltext[4] + "&include_entities=true",
-			function (error) {
-				if (error) {
-					window.alert("Fav error")
+				function (error) {
+					if (error) {
+						window.alert("Fav error")
+					}
 				}
-			}
-		)
+			)
 		}
 	}
 
@@ -130,8 +139,8 @@ function makeDom(tltext) {
 	tlarea.insertBefore(div, tlarea.firstChild);
 }
 
-makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"]])
-//makeDom(["username", "text", "via", "time", "id", "krt6006" ,"video",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", , "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"]])
+//makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"]])
+makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/935878475205844992/pu/vid/180x320/ilbZQ0zVC0wYl-G6.mp4"])
 
 const twitter = require("twitter")
 const fs = require("fs")
@@ -210,22 +219,27 @@ key.stream('user', function (stream) {
 		temp.push(data.user.created_at)
 		temp.push(data.id_str)
 		temp.push(data.user.screen_name)
-		try {
-			temp.push(data.extended_entities.media[0].media_url_https)
-		} catch (e) {
-		}
-		try {
-			temp.push(data.extended_entities.media[1].media_url_https)
-		} catch (e) {
-		}
-		try {
-			temp.push(data.extended_entities.media[2].media_url_https)
-		} catch (e) {
-		}
-		try {
-			temp.push(data.extended_entities.media[3].media_url_https)
-		} catch (e) {
-		}
+		let mediatemp = [];
+			temp.push("pic")
+			try {
+				mediatemp.push(data.extended_entities.media[0].media_url_https)
+			} catch (e) {
+			}
+			try {
+				mediatemp.push(data.extended_entities.media[1].media_url_https)
+			} catch (e) {
+			}
+			try {
+				mediatemp.push(data.extended_entities.media[2].media_url_https)
+			} catch (e) {
+			}
+			try {
+				mediatemp.push(data.extended_entities.media[3].media_url_https)
+			} catch (e) {
+			}
+		
+
+		temp.push(mediatemp)
 
 		makeDom(temp)
 	})
