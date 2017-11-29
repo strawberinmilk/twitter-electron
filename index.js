@@ -14,6 +14,9 @@ let replyid
 function makeDom(tltext) {
 	let div = document.createElement('div');
 	div.className = "timeline";
+	let profile = document.createElement("div");
+	let icon = document.createElement("img");
+	icon.className = "profile"
 	let text0 = document.createElement("p");
 	let text1 = document.createElement("p");
 	let text2 = document.createElement("p");
@@ -26,7 +29,9 @@ function makeDom(tltext) {
 	let img3 = document.createElement("img");
 	let img4 = document.createElement("img");
 
-	text0.innerHTML = escape(tltext[0]);
+
+	icon.src = `http://furyu.nazo.cc/twicon/${tltext[5]}/bigger`
+	text0.innerHTML = `${escape(tltext[0])}<br>@${escape(tltext[5])}<br clear="left">`;
 	text1.innerHTML = escape(tltext[1]);
 	text2.innerHTML = escape(tltext[2]);
 	text2.innerHTML += "<br>";
@@ -69,25 +74,22 @@ function makeDom(tltext) {
 
 	if (tltext[6]) {
 		img1.src = tltext[6]
-		img1.src = tltext[6]
 		img1.height = "130"
 	}
 	if (tltext[7]) {
-		img2.src = tltext[7]
 		img2.src = tltext[7]
 		img2.height = "130"
 	}
 	if (tltext[8]) {
 		img3.src = tltext[8]
-		img3.src = tltext[8]
 		img3.height = "130"
 	}
 	if (tltext[9]) {
 		img4.src = tltext[9]
-		img4.src = tltext[9]
 		img4.height = "130"
 	}
 
+	div.appendChild(icon);	
 	div.appendChild(text0);
 	div.appendChild(text1);
 	div.appendChild(text2);
@@ -105,7 +107,7 @@ function makeDom(tltext) {
 	tlarea.insertBefore(div, tlarea.firstChild);
 }
 
-makeDom(["a", "b", "c", "d", "e", "f", , "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", , "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"])
+makeDom(["username", "text", "via", "time", "id", "krt6006" , "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", , "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"])
 
 const twitter = require("twitter")
 const fs = require("fs")
@@ -178,7 +180,7 @@ key.stream('user', function (stream) {
 		tmp = tmp[1].split('</a>');
 
 		let temp = []
-		temp.push(data.user.name + " @" + data.user.screen_name)
+		temp.push(data.user.name)
 		temp.push(data.text)
 		temp.push("via " + tmp)
 		temp.push(data.user.created_at)
