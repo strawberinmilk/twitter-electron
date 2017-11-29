@@ -28,7 +28,8 @@ function makeDom(tltext) {
 	let img2 = document.createElement("img");
 	let img3 = document.createElement("img");
 	let img4 = document.createElement("img");
-
+	let video = document.createElement("video");
+	
 
 	icon.src = `http://furyu.nazo.cc/twicon/${tltext[5]}/bigger`
 	text0.innerHTML = `${escape(tltext[0])}<br>@${escape(tltext[5])}<br clear="left">`;
@@ -37,6 +38,40 @@ function makeDom(tltext) {
 	text2.innerHTML += "<br>";
 	text2.innerHTML += escape(tltext[3]);
 
+	div.appendChild(icon);	
+	div.appendChild(text0);
+	div.appendChild(text1);
+	div.appendChild(text2);
+
+	//画像orビデオ
+	if(tltext[6] =="pic"){
+		let temp = tltext[7]
+			if (temp[0]) {
+				img1.src = temp[0]
+				img1.className = "pic"
+			div.appendChild(img1);
+			
+			}
+			if (temp[1]) {
+				img2.src = temp[1]
+				img2.className = "pic"
+			div.appendChild(img2);
+			
+			}
+			if (temp[2]) {
+				img3.src = temp[2]
+				img3.className = "pic"
+
+			}
+			if (temp[3]) {
+				img4.src = temp[3]
+				img4.className = "pic"
+			div.appendChild(img4);
+			
+			}
+		}
+
+		//ボタン生成
 	reply.innerHTML = "reply";
 	reply.onclick = function () {
 		document.getElementById("posttweettext").value = "@" + escape(tltext[5]) + " "
@@ -85,31 +120,6 @@ function makeDom(tltext) {
 		}
 	}
 
-	if (tltext[6]) {
-		img1.src = tltext[6]
-		img1.height = "130"
-	}
-	if (tltext[7]) {
-		img2.src = tltext[7]
-		img2.height = "130"
-	}
-	if (tltext[8]) {
-		img3.src = tltext[8]
-		img3.height = "130"
-	}
-	if (tltext[9]) {
-		img4.src = tltext[9]
-		img4.height = "130"
-	}
-
-	div.appendChild(icon);	
-	div.appendChild(text0);
-	div.appendChild(text1);
-	div.appendChild(text2);
-	div.appendChild(img1);
-	div.appendChild(img2);
-	div.appendChild(img3);
-	div.appendChild(img4);
 	div.appendChild(document.createElement("br"))
 	div.appendChild(reply);
 	div.appendChild(rt);
@@ -120,7 +130,8 @@ function makeDom(tltext) {
 	tlarea.insertBefore(div, tlarea.firstChild);
 }
 
-makeDom(["username", "text", "via", "time", "id", "krt6006" , "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", , "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"])
+makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"]])
+//makeDom(["username", "text", "via", "time", "id", "krt6006" ,"video",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", , "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"]])
 
 const twitter = require("twitter")
 const fs = require("fs")

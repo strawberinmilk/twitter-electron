@@ -34,3 +34,11 @@ width : 100%;
 .profile{
   float:left
 }
+.pic{
+  height: 130px;
+  background-color: red;
+}
+.pic:hover{
+  height: auto;
+  width: 100%;
+}
