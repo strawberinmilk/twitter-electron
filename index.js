@@ -66,10 +66,23 @@ function makeDom(tltext) {
 		)
 	}
 
-
 	copy.innerHTML = "copy"
 	copy.onclick = function () {
 		document.getElementById("posttweettext").value = tltext[1]
+		if(document.getElementById("copytweet").checked){
+			setTimeout(() => {
+				sendTweet()
+			}, 20);
+		}
+		if(document.getElementById("copyfav").checked){
+			key.post('favorites/create.json?id=' + tltext[4] + "&include_entities=true",
+			function (error) {
+				if (error) {
+					window.alert("Fav error")
+				}
+			}
+		)
+		}
 	}
 
 	if (tltext[6]) {
