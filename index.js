@@ -46,8 +46,8 @@ function makeDom(tltext) {
 	//画像orビデオ
 	switch (tltext[6]) {
 		case "pic":
-		let temp = tltext[7]
-		if (temp[0]) {
+			let temp = tltext[7]
+			if (temp[0]) {
 				img1.src = temp[0]
 				img1.className = "pic"
 				div.appendChild(img1);
@@ -73,9 +73,9 @@ function makeDom(tltext) {
 
 			}
 			break;
-		case "video":		
+		case "video":
 			video.src = tltext[7];
-			video.setAttribute("controls","");
+			video.setAttribute("controls", "");
 			div.appendChild(video);
 			break;
 	}
@@ -140,7 +140,7 @@ function makeDom(tltext) {
 }
 
 //makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"]])
-makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/935878475205844992/pu/vid/180x320/ilbZQ0zVC0wYl-G6.mp4"])
+makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4"])
 
 const twitter = require("twitter")
 const fs = require("fs")
@@ -219,8 +219,13 @@ key.stream('user', function (stream) {
 		temp.push(data.user.created_at)
 		temp.push(data.id_str)
 		temp.push(data.user.screen_name)
-		let mediatemp = [];
-			temp.push("pic")
+		temp.push(undefined)
+		let mediatemp		
+
+		try{
+		if (data.extended_entities.media[0].type=="photo") {
+			temp[6] = "pic"
+			mediatemp = [];			
 			try {
 				mediatemp.push(data.extended_entities.media[0].media_url_https)
 			} catch (e) {
@@ -237,8 +242,17 @@ key.stream('user', function (stream) {
 				mediatemp.push(data.extended_entities.media[3].media_url_https)
 			} catch (e) {
 			}
-		
+		}
+	} catch (e){
+	}
 
+	try{
+		if(data.extended_entities.media[0].type=="video"){
+			temp[6] = "video"
+			mediatemp = data.extended_entities.media[0].video_info.variants[0].url
+		}
+	}catch(e){
+	}
 		temp.push(mediatemp)
 
 		makeDom(temp)
