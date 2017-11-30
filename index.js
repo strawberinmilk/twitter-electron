@@ -28,6 +28,7 @@ function makeDom(tltext) {
 	let img2 = document.createElement("img");
 	let img3 = document.createElement("img");
 	let img4 = document.createElement("img");
+//	let youtube = document.createElement("p");
 	let video = document.createElement("video");
 
 
@@ -78,7 +79,14 @@ function makeDom(tltext) {
 			video.setAttribute("controls", "");
 			div.appendChild(video);
 			break;
+		}
+
+/*
+		if(tltext[8]=="youtube"){
+			youtube.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${tltext[9]}" frameborder="0" allowfullscreen></iframe>`
+			div.appendChild(youtube)
 	}
+*/
 
 	//ボタン生成
 	reply.innerHTML = "reply";
@@ -140,7 +148,7 @@ function makeDom(tltext) {
 }
 
 //makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"]])
-makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4"])
+makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4","youtube","bUc5bpOSFqA"])
 
 const twitter = require("twitter")
 const fs = require("fs")
@@ -255,6 +263,12 @@ key.stream('user', function (stream) {
 	}
 		temp.push(mediatemp)
 		
+		/*
+		let reg = data.text.match(/https:\/\/www.youtube.com\/watch\?v=(\w)+/i)
+		if(reg != null){
+			window.alert('reg')
+			//未完成		}
+		*/
 
 		makeDom(temp)
 	})
