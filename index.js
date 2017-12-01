@@ -1,4 +1,6 @@
 "use strict";
+var webclient = require("request");
+
 function escape(str) {
 	if (str == null) return '';
 	str = str.toString();
@@ -28,7 +30,7 @@ function makeDom(tltext) {
 	let img2 = document.createElement("img");
 	let img3 = document.createElement("img");
 	let img4 = document.createElement("img");
-//	let youtube = document.createElement("p");
+	let youtube = document.createElement("p");
 	let video = document.createElement("video");
 
 
@@ -79,14 +81,14 @@ function makeDom(tltext) {
 			video.setAttribute("controls", "");
 			div.appendChild(video);
 			break;
-		}
-
-/*
-		if(tltext[8]=="youtube"){
-			youtube.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${tltext[9]}" frameborder="0" allowfullscreen></iframe>`
-			div.appendChild(youtube)
 	}
-*/
+
+
+	if (tltext[8] == "youtube") {
+		youtube.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${tltext[9]}" frameborder="0" allowfullscreen></iframe>`
+		div.appendChild(youtube)
+	}
+
 
 	//ボタン生成
 	reply.innerHTML = "reply";
@@ -148,7 +150,8 @@ function makeDom(tltext) {
 }
 
 //makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"]])
-makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4","youtube","bUc5bpOSFqA"])
+//makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4","youtube","bUc5bpOSFqA"])
+makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4", "youtube", "bUc5bpOSFqA"])
 
 const twitter = require("twitter")
 const fs = require("fs")
@@ -228,48 +231,63 @@ key.stream('user', function (stream) {
 		temp.push(data.id_str)
 		temp.push(data.user.screen_name)
 		temp.push(undefined)
-		let mediatemp		
+		let mediatemp
 
-		try{
-		if (data.extended_entities.media[0].type=="photo") {
-			temp[6] = "pic"
-			mediatemp = [];			
-			try {
-				mediatemp.push(data.extended_entities.media[0].media_url_https)
-			} catch (e) {
+		try {
+			if (data.extended_entities.media[0].type == "photo") {
+				temp[6] = "pic"
+				mediatemp = [];
+				try {
+					mediatemp.push(data.extended_entities.media[0].media_url_https)
+				} catch (e) {
+				}
+				try {
+					mediatemp.push(data.extended_entities.media[1].media_url_https)
+				} catch (e) {
+				}
+				try {
+					mediatemp.push(data.extended_entities.media[2].media_url_https)
+				} catch (e) {
+				}
+				try {
+					mediatemp.push(data.extended_entities.media[3].media_url_https)
+				} catch (e) {
+				}
 			}
-			try {
-				mediatemp.push(data.extended_entities.media[1].media_url_https)
-			} catch (e) {
-			}
-			try {
-				mediatemp.push(data.extended_entities.media[2].media_url_https)
-			} catch (e) {
-			}
-			try {
-				mediatemp.push(data.extended_entities.media[3].media_url_https)
-			} catch (e) {
-			}
+		} catch (e) {
 		}
-	} catch (e){
-	}
 
-	try{
-		if(data.extended_entities.media[0].type=="video"){
-			temp[6] = "video"
-			mediatemp = data.extended_entities.media[0].video_info.variants[0].url
+		try {
+			if (data.extended_entities.media[0].type == "video") {
+				temp[6] = "video"
+				mediatemp = data.extended_entities.media[0].video_info.variants[0].url
+			}
+		} catch (e) {
 		}
-	}catch(e){
-	}
+
 		temp.push(mediatemp)
-		
-		/*
-		let reg = data.text.match(/https:\/\/www.youtube.com\/watch\?v=(\w)+/i)
-		if(reg != null){
-			window.alert('reg')
-			//未完成		}
-		*/
+		temp.push(undefined)
+		temp.push(undefined)
+		let reg = data.text.match(/https:\/\/t.co\/(\w)+/i)
+		if (reg != null) {
+			webclient.get({
+				url: reg[0]
+			}, function (error, response, body) {
+				try {
+					let regyoutube = body.match(/https:\/\/www.youtube.com\/watch\?v=(-|\w)+/i)
+					if (regyoutube[0].split("v=")[1] != null) {
+						temp[8] = "youtube"
+						temp[9] = regyoutube[0].split("v=")[1]
+						makeDom(temp)
+					}
+				} catch (e) {
+					makeDom(temp)
+				}
+			});
 
-		makeDom(temp)
+		} else {
+
+			makeDom(temp)
+		}
 	})
 })
