@@ -88,6 +88,11 @@ function makeDom(tltext) {
 		youtube.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${tltext[9]}" frameborder="0" allowfullscreen></iframe>`
 		div.appendChild(youtube)
 	}
+	if(tltext[8] == "niconico"){
+		let niconico = document.createElement("script")
+		niconico.src = `https://embed.nicovideo.jp/watch/${tltext[9]}/script?w=640&h=360`
+		div.appendChild(niconico)
+	}
 
 
 	//ボタン生成
@@ -278,10 +283,20 @@ key.stream('user', function (stream) {
 					if (regyoutube[0].split("v=")[1] != null) {
 						temp[8] = "youtube"
 						temp[9] = regyoutube[0].split("v=")[1]
-						makeDom(temp)
 					}
-				} catch (e) {
 					makeDom(temp)
+				} catch (e) {
+					try{
+						//niconico
+						let regnico = body.match(/http:\/\/www.nicovideo.jp\/watch\/(\w)+/i)
+						if(regnico[0].split("watch/")[1]){
+						temp[8] = "niconico"
+						temp[9] = regnico[0].split("watch/")[1]
+						}
+						makeDom(temp)
+					}catch(e){
+					makeDom(temp)
+					}
 				}
 			});
 

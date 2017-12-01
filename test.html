@@ -1,15 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-</head>
-<body>
-  <script type="application/javascript" src="https://embed.nicovideo.jp/watch/1511491581/script?w=640&h=360"></script>
-  <noscript>
-    <a href="http://www.nicovideo.jp/watch/1511491581">ブレンド・S　第8話「アイドル属性も、ついてます」</a>
-  </noscript>  
-</body>
-</html>
+try{
+  //niconico
+  let regnico = body.match(/http:\/\/www.nicovideo.jp\/watch\/(\w)+/i)
+  regnico = regnico[0].split("watch/")[1]
+  temp[8] = `<script type="application/javascript" src="https://embed.nicovideo.jp/watch/sm32285755/script?w=640&h=360"></script>`
+  makeDom(temp)
+  window.alert(regnico)
+  
+}
