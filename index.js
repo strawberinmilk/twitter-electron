@@ -152,6 +152,9 @@ function makeDom(tltext) {
 
 	let tlarea = document.getElementById("tlarea");
 	tlarea.insertBefore(div, tlarea.firstChild);
+	if(window.pageYOffset>10){
+		scrollBy(0,div.clientHeight+16)
+	}
 }
 
 //makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"]])
