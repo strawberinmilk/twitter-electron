@@ -1,6 +1,7 @@
 "use strict";
 var webclient = require("request");
 
+//エスケープ
 function escape(str) {
 	if (str == null) return '';
 	str = str.toString();
@@ -12,6 +13,7 @@ function escape(str) {
 	str = str.replace(/\r?\n/g, "<br />\n");
 	return str;
 }
+//タグ生成はまとめてここに
 let replyid
 function makeDom(tltext) {
 	let div = document.createElement('div');
@@ -33,7 +35,7 @@ function makeDom(tltext) {
 	let youtube = document.createElement("p");
 	let video = document.createElement("video");
 
-
+//テキスト生成
 	icon.src = `http://furyu.nazo.cc/twicon/${tltext[5]}/bigger`
 	text0.innerHTML = `${escape(tltext[0])}<br>@${escape(tltext[5])}<br clear="left">`;
 	text1.innerHTML = escape(tltext[1]);
@@ -79,11 +81,12 @@ function makeDom(tltext) {
 		case "video":
 			video.src = tltext[7];
 			video.setAttribute("controls", "");
+			video.className = "video";
 			div.appendChild(video);
 			break;
 	}
 
-
+//再生画面生成、IDだけもらってくるよ
 	if (tltext[8] == "youtube") {
 		youtube.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${tltext[9]}" frameborder="0" allowfullscreen></iframe>`
 		div.appendChild(youtube)
@@ -156,7 +159,7 @@ function makeDom(tltext) {
 		scrollBy(0,div.clientHeight+16)
 	}
 }
-
+//テスト用
 //makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"]])
 //makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4","youtube","bUc5bpOSFqA"])
 makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4", "youtube", "bUc5bpOSFqA"])
@@ -177,17 +180,20 @@ if (key === "") {
 	});
 };
 
+//ctrl+enterでツイート
 document.onkeydown = function (e) {
 	if (e.ctrlKey == true && e.keyCode == 13) {
 		sendTweet()
 	}
 }
 
+//ツイートボタン
 let tweetbutton = document.getElementById("posttweetbutton")
 tweetbutton.onclick = function () {
 	sendTweet()
 }
 
+//クリアボタン
 let replycansel = document.getElementById("replycansel")
 replycansel.onclick = function () {
 	replyid = undefined
@@ -195,7 +201,7 @@ replycansel.onclick = function () {
 	document.getElementById("posttweettext").value = ""
 }
 
-
+//送信処理
 function sendTweet() {
 	if (replyid === undefined) {
 
@@ -223,6 +229,8 @@ function sendTweet() {
 		);
 	}
 }
+
+//ストリーム
 key.stream('user', function (stream) {
 
 	stream.on("data", function (data) {
