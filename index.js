@@ -35,7 +35,7 @@ function makeDom(tltext) {
 	let youtube = document.createElement("p");
 	let video = document.createElement("video");
 
-//テキスト生成
+	//テキスト生成
 	icon.src = `http://furyu.nazo.cc/twicon/${tltext[5]}/bigger`
 	text0.innerHTML = `${escape(tltext[0])}<br>@${escape(tltext[5])}<br clear="left">`;
 	text1.innerHTML = escape(tltext[1]);
@@ -51,29 +51,57 @@ function makeDom(tltext) {
 	//画像orビデオ
 	switch (tltext[6]) {
 		case "pic":
-			let temp = tltext[7]
-			if (temp[0]) {
-				img1.src = temp[0]
-				img1.className = "pic"
-				div.appendChild(img1);
+			let pictemp = tltext[7]
 
+			if (pictemp[0]) {
+				img1.src = pictemp[0]
+				img1.className = "pic"
+				img1.onclick = function () {
+					if (img1.classList.contains("picclick")) {
+						img1.className = "pic"
+					} else {
+						img1.className = "picclick"
+					}
+				}
+				div.appendChild(img1);
 			}
-			if (temp[1]) {
-				img2.src = temp[1]
+			if (pictemp[1]) {
+				img2.src = pictemp[1]
 				img2.className = "pic"
+				img2.onclick = function () {
+					if (img2.classList.contains("picclick")) {
+						img2.className = "pic"
+					} else {
+						img2.className = "picclick"
+					}
+				}
 				div.appendChild(img2);
 
 			}
-			if (temp[2]) {
-				img3.src = temp[2]
+			if (pictemp[2]) {
+				img3.src = pictemp[2]
 				img3.className = "pic"
+				img3.onclick = function () {
+					if (img3.classList.contains("picclick")) {
+						img3.className = "pic"
+					} else {
+						img3.className = "picclick"
+					}
+				}
 				div.appendChild(img3);
 
 
 			}
-			if (temp[3]) {
-				img4.src = temp[3]
+			if (pictemp[3]) {
+				img4.src = pictemp[3]
 				img4.className = "pic"
+				img4.onclick = function () {
+					if (img4.classList.contains("picclick")) {
+						img4.className = "pic"
+					} else {
+						img4.className = "picclick"
+					}
+				}
 				div.appendChild(img4);
 
 			}
@@ -81,17 +109,29 @@ function makeDom(tltext) {
 		case "video":
 			video.src = tltext[7];
 			video.setAttribute("controls", "");
-			video.className = "video";
+			video.className = "video1";
+			video.onclick = function () {
+				if (video.classList.contains("video1")) {
+					video.className = "video2"
+				} else {
+					if (video.classList.contains("video2")) {
+						video.className = "video3"
+					} else {
+						video.className = "video1"
+					}
+				}
+			}
+
 			div.appendChild(video);
 			break;
 	}
 
-//再生画面生成、IDだけもらってくるよ
+	//再生画面生成、IDだけもらってくるよ
 	if (tltext[8] == "youtube") {
 		youtube.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${tltext[9]}" frameborder="0" allowfullscreen></iframe>`
 		div.appendChild(youtube)
 	}
-	if(tltext[8] == "niconico"){
+	if (tltext[8] == "niconico") {
 		let niconico = document.createElement("script")
 		niconico.src = `https://embed.nicovideo.jp/watch/${tltext[9]}/script?w=640&h=360`
 		div.appendChild(niconico)
@@ -155,14 +195,14 @@ function makeDom(tltext) {
 
 	let tlarea = document.getElementById("tlarea");
 	tlarea.insertBefore(div, tlarea.firstChild);
-	if(window.pageYOffset>10){
-		scrollBy(0,div.clientHeight+16)
+	if (window.pageYOffset > 10) {
+		scrollBy(0, div.clientHeight + 16)
 	}
 }
 //テスト用
 //makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"]])
-//makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4","youtube","bUc5bpOSFqA"])
 makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4", "youtube", "bUc5bpOSFqA"])
+//makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4", "youtube", "bUc5bpOSFqA"])
 
 const twitter = require("twitter")
 const fs = require("fs")
@@ -297,16 +337,16 @@ key.stream('user', function (stream) {
 					}
 					makeDom(temp)
 				} catch (e) {
-					try{
+					try {
 						//niconico
 						let regnico = body.match(/http:\/\/www.nicovideo.jp\/watch\/(\w)+/i)
-						if(regnico[0].split("watch/")[1]){
-						temp[8] = "niconico"
-						temp[9] = regnico[0].split("watch/")[1]
+						if (regnico[0].split("watch/")[1]) {
+							temp[8] = "niconico"
+							temp[9] = regnico[0].split("watch/")[1]
 						}
 						makeDom(temp)
-					}catch(e){
-					makeDom(temp)
+					} catch (e) {
+						makeDom(temp)
 					}
 				}
 			});

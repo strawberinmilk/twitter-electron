@@ -32,6 +32,7 @@ overflow-x: hidden;
   width: calc(100% - 220px);
   margin : 10px;
 }
+
 .profile{
   float:left;
   width:40px;
@@ -40,10 +41,19 @@ overflow-x: hidden;
   height: 130px;
   background-color: red;
 }
-.pic:hover{
+.pica:hover{
   height: auto;
   width: 100%;
 }
-.video{
+.picclick{
+  width:100%;
+}
+.video1{
   height:auto;
+}
+.video2{
+  width:100vh;
+}
+.video3{
+  height: 100vh;
 }
