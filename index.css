@@ -57,3 +57,7 @@ overflow-x: hidden;
 .video3{
   height: 100vh;
 }
+
+.notice{
+  background-color: black;
+}

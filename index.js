@@ -218,6 +218,7 @@ if (key === "") {
 		access_token_key: key[2],
 		access_token_secret: key[3]
 	});
+	new Notification("認証成功");
 };
 
 //ctrl+enterでツイート
@@ -355,5 +356,43 @@ key.stream('user', function (stream) {
 
 			makeDom(temp)
 		}
+	})//stream on
+	let eventreturn = "a"
+	stream.on("event", function (data) {
+		let eventdata = JSON.stringify(data)
+
+		switch (data.event) {
+
+
+
+			case "favorite":
+				eventreturn = `by: ${data.source.name} @${data.source.screen_name}\ntarget: ${data.target_object.text}\nnnn`
+				new Notification(data.event, { body: eventreturn });
+
+				break;
+
+			case "follow":
+			case "unfollow":
+				eventreturn = data.source.name + "\n" + "@" + data.source.screen_name
+				new Notification(data.event, { body: eventreturn });
+
+				break;
+
+			case "retweeted_retweet":
+				eventreturn = `by ${data.source.name} @${data.source.screen_name} target:${data.target_object.entities.user_mentions[0].name} ${data.target_object.entities.user_mentions[0].screen_name}\n${data.target_object.retweeted_status.text}`;
+				new Notification(data.event, { body: eventreturn });
+
+				break;
+
+
+			default:
+				new Notification(data.event);
+
+				break;
+
+		}
+
+
 	})
+
 })
