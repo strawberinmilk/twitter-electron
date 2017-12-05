@@ -59,5 +59,10 @@ overflow-x: hidden;
 }
 
 .notice{
-  background-color: black;
+  background-color: red;
+  height: 100%;
+  width: calc(100% - 220px);
+  position: fixed;
+  top: 0px;                   /* 位置(上0px) */
+  left: 99%;
 }

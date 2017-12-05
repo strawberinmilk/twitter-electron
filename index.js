@@ -21,6 +21,7 @@ function makeDom(tltext) {
 	let profile = document.createElement("div");
 	let icon = document.createElement("img");
 	icon.className = "profile"
+	let text00 = document.createElement("p")
 	let text0 = document.createElement("p");
 	let text1 = document.createElement("p");
 	let text2 = document.createElement("p");
@@ -35,6 +36,10 @@ function makeDom(tltext) {
 	let youtube = document.createElement("p");
 	let video = document.createElement("video");
 
+	if(tltext[10]){
+		text00.innerHTML = tltext[10];
+		div.appendChild(text00)
+	}
 	//テキスト生成
 	icon.src = `http://furyu.nazo.cc/twicon/${tltext[5]}/bigger`
 	text0.innerHTML = `${escape(tltext[0])}<br>@${escape(tltext[5])}<br clear="left">`;
@@ -201,8 +206,8 @@ function makeDom(tltext) {
 }
 //テスト用
 //makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"]])
-makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4", "youtube", "bUc5bpOSFqA"])
 //makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4", "youtube", "bUc5bpOSFqA"])
+makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4", "youtube", "bUc5bpOSFqA"])
 
 const twitter = require("twitter")
 const fs = require("fs")
@@ -218,8 +223,8 @@ if (key === "") {
 		access_token_key: key[2],
 		access_token_secret: key[3]
 	});
-	new Notification("認証成功");
 };
+
 
 //ctrl+enterでツイート
 document.onkeydown = function (e) {
@@ -270,6 +275,12 @@ function sendTweet() {
 		);
 	}
 }
+let mydata
+key.get("account/verify_credentials",function (error,data){
+	mydata = data
+	new Notification("認証成功",{body:`@${data.screen_name} ${data.name}`})
+})
+
 
 //ストリーム
 key.stream('user', function (stream) {
@@ -279,6 +290,8 @@ key.stream('user', function (stream) {
 		let tmp = data.source;
 		tmp = tmp.split('">');
 		tmp = tmp[1].split('</a>');
+
+		if(data.retweeted_status==undefined){
 
 		let temp = []
 		temp.push(data.user.name)
@@ -353,8 +366,94 @@ key.stream('user', function (stream) {
 			});
 
 		} else {
-
 			makeDom(temp)
+		}
+
+		}else{
+			if(data.retweeted_status.user.screen_name==mydata.screen_name){
+				//被RT
+				new Notification("RT", { body: `by:${data.user.name} @${data.user.screen_name} target:${data.retweeted_status.user.name} @${data.retweeted_status.user.screen_name}\r\n${data.retweeted_status.text}` });
+			}else{
+				//関係ないRT
+				let temp = []
+				temp.push(data.retweeted_status.user.name)
+				temp.push(data.retweeted_status.text)
+				temp.push("via " + tmp)
+				temp.push(data.retweeted_status.user.created_at)
+				temp.push(data.retweeted_status.id_str)
+				temp.push(data.retweeted_status.user.screen_name)
+				temp.push(undefined)
+				temp.push(undefined)
+				temp.push(undefined)
+				temp.push(undefined)
+				temp.push(`RT by:@${data.user.screen_name} ${data.user.name}`)
+				let mediatemp
+		
+				try {
+					if (data.extended_entities.media[0].type == "photo") {
+						temp[6] = "pic"
+						mediatemp = [];
+						try {
+							mediatemp.push(data.extended_entities.media[0].media_url_https)
+						} catch (e) {
+						}
+						try {
+							mediatemp.push(data.extended_entities.media[1].media_url_https)
+						} catch (e) {
+						}
+						try {
+							mediatemp.push(data.extended_entities.media[2].media_url_https)
+						} catch (e) {
+						}
+						try {
+							mediatemp.push(data.extended_entities.media[3].media_url_https)
+						} catch (e) {
+						}
+					}
+				} catch (e) {
+				}
+		
+				try {
+					if (data.extended_entities.media[0].type == "video") {
+						temp[6] = "video"
+						mediatemp = data.extended_entities.media[0].video_info.variants[0].url
+					}
+				} catch (e) {
+				}
+		
+				temp[7]=mediatemp
+
+				let reg = data.text.match(/https:\/\/t.co\/(\w)+/i)
+				if (reg != null) {
+					webclient.get({
+						url: reg[0]
+					}, function (error, response, body) {
+						try {
+							let regyoutube = body.match(/https:\/\/www.youtube.com\/watch\?v=(-|\w)+/i)
+							if (regyoutube[0].split("v=")[1] != null) {
+								temp[8] = "youtube"
+								temp[9] = regyoutube[0].split("v=")[1]
+							}
+							makeDom(temp)
+						} catch (e) {
+							try {
+								//niconico
+								let regnico = body.match(/http:\/\/www.nicovideo.jp\/watch\/(\w)+/i)
+								if (regnico[0].split("watch/")[1]) {
+									temp[8] = "niconico"
+									temp[9] = regnico[0].split("watch/")[1]
+								}
+								makeDom(temp)
+							} catch (e) {
+								makeDom(temp)
+							}
+						}
+					});
+		
+				} else {
+					makeDom(temp)
+				}
+			}
 		}
 	})//stream on
 	let eventreturn = "a"
@@ -366,7 +465,8 @@ key.stream('user', function (stream) {
 
 
 			case "favorite":
-				eventreturn = `by: ${data.source.name} @${data.source.screen_name}\ntarget: ${data.target_object.text}\nnnn`
+			case "unfavorite":
+				eventreturn = `by: ${data.source.name} @${data.source.screen_name}\ntarget: ${data.target_object.text}`
 				new Notification(data.event, { body: eventreturn });
 
 				break;
