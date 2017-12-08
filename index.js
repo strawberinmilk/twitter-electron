@@ -5,10 +5,12 @@ var webclient = require("request");
 function escape(str) {
 	if (str == null) return '';
 	str = str.toString();
+	/*
 	str = str.replace(/&/g, '&amp;');
 	str = str.replace(/</g, '&lt;');
 	str = str.replace(/>/g, '&gt;');
 	str = str.replace(/ /g, '&nbsp;');
+*/
 	str = str.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;'); // Tabをスペース4つに..
 	str = str.replace(/\r?\n/g, "<br />\n");
 	return str;
@@ -36,7 +38,7 @@ function makeDom(tltext) {
 	let youtube = document.createElement("p");
 	let video = document.createElement("video");
 
-	if(tltext[10]){
+	if (tltext[10]) {
 		text00.innerHTML = tltext[10];
 		div.appendChild(text00)
 	}
@@ -62,10 +64,14 @@ function makeDom(tltext) {
 				img1.src = pictemp[0]
 				img1.className = "pic"
 				img1.onclick = function () {
-					if (img1.classList.contains("picclick")) {
-						img1.className = "pic"
+					if (img1.classList.contains("pic")) {
+						img1.className = "video2"
 					} else {
-						img1.className = "picclick"
+						if (img1.classList.contains("video2")) {
+							img1.className = "video3"
+						} else {
+							img1.className = "pic"
+						}
 					}
 				}
 				div.appendChild(img1);
@@ -74,10 +80,14 @@ function makeDom(tltext) {
 				img2.src = pictemp[1]
 				img2.className = "pic"
 				img2.onclick = function () {
-					if (img2.classList.contains("picclick")) {
-						img2.className = "pic"
+					if (img2.classList.contains("pic")) {
+						img2.className = "video2"
 					} else {
-						img2.className = "picclick"
+						if (img2.classList.contains("video2")) {
+							img2.className = "video3"
+						} else {
+							img2.className = "pic"
+						}
 					}
 				}
 				div.appendChild(img2);
@@ -87,10 +97,14 @@ function makeDom(tltext) {
 				img3.src = pictemp[2]
 				img3.className = "pic"
 				img3.onclick = function () {
-					if (img3.classList.contains("picclick")) {
-						img3.className = "pic"
+					if (img3.classList.contains("pic")) {
+						img3.className = "video2"
 					} else {
-						img3.className = "picclick"
+						if (img3.classList.contains("video2")) {
+							img3.className = "video3"
+						} else {
+							img3.className = "pic"
+						}
 					}
 				}
 				div.appendChild(img3);
@@ -101,10 +115,14 @@ function makeDom(tltext) {
 				img4.src = pictemp[3]
 				img4.className = "pic"
 				img4.onclick = function () {
-					if (img4.classList.contains("picclick")) {
-						img4.className = "pic"
+					if (img4.classList.contains("pic")) {
+						img4.className = "video2"
 					} else {
-						img4.className = "picclick"
+						if (img4.classList.contains("video2")) {
+							img4.className = "video3"
+						} else {
+							img4.className = "pic"
+						}
 					}
 				}
 				div.appendChild(img4);
@@ -231,6 +249,9 @@ document.onkeydown = function (e) {
 	if (e.ctrlKey == true && e.keyCode == 13) {
 		sendTweet()
 	}
+	setTimeout(() => {
+	document.getElementById("textnumber").innerHTML = 140-document.getElementById("posttweettext").value.length;	
+	}, 5);
 }
 
 //ツイートボタン
@@ -275,10 +296,13 @@ function sendTweet() {
 		);
 	}
 }
+
+
+//認証試験
 let mydata
-key.get("account/verify_credentials",function (error,data){
+key.get("account/verify_credentials", function (error, data) {
 	mydata = data
-	new Notification("認証成功",{body:`@${data.screen_name} ${data.name}`})
+	new Notification("認証成功", { body: `@${data.screen_name} ${data.name}` })
 })
 
 
@@ -291,89 +315,90 @@ key.stream('user', function (stream) {
 		tmp = tmp.split('">');
 		tmp = tmp[1].split('</a>');
 
-		if(data.retweeted_status==undefined){
+		if (data.retweeted_status == undefined) {
 
-		let temp = []
-		temp.push(data.user.name)
-		temp.push(data.text)
-		temp.push("via " + tmp)
-		temp.push(data.user.created_at)
-		temp.push(data.id_str)
-		temp.push(data.user.screen_name)
-		temp.push(undefined)
-		let mediatemp
-
-		try {
-			if (data.extended_entities.media[0].type == "photo") {
-				temp[6] = "pic"
-				mediatemp = [];
-				try {
-					mediatemp.push(data.extended_entities.media[0].media_url_https)
-				} catch (e) {
-				}
-				try {
-					mediatemp.push(data.extended_entities.media[1].media_url_https)
-				} catch (e) {
-				}
-				try {
-					mediatemp.push(data.extended_entities.media[2].media_url_https)
-				} catch (e) {
-				}
-				try {
-					mediatemp.push(data.extended_entities.media[3].media_url_https)
-				} catch (e) {
-				}
-			}
-		} catch (e) {
-		}
-
-		try {
-			if (data.extended_entities.media[0].type == "video") {
-				temp[6] = "video"
-				mediatemp = data.extended_entities.media[0].video_info.variants[0].url
-			}
-		} catch (e) {
-		}
-
-		temp.push(mediatemp)
-		temp.push(undefined)
-		temp.push(undefined)
-		let reg = data.text.match(/https:\/\/t.co\/(\w)+/i)
-		if (reg != null) {
-			webclient.get({
-				url: reg[0]
-			}, function (error, response, body) {
-				try {
-					let regyoutube = body.match(/https:\/\/www.youtube.com\/watch\?v=(-|\w)+/i)
-					if (regyoutube[0].split("v=")[1] != null) {
-						temp[8] = "youtube"
-						temp[9] = regyoutube[0].split("v=")[1]
-					}
-					makeDom(temp)
-				} catch (e) {
+			let temp = []
+			temp.push(data.user.name)
+			temp.push(data.text)
+			temp.push("via " + tmp)
+			temp.push(data.user.created_at)
+			temp.push(data.id_str)
+			temp.push(data.user.screen_name)
+			temp.push(undefined)
+			let mediatemp
+//メディアがあるか
+			try {
+				if (data.extended_entities.media[0].type == "photo") {
+					temp[6] = "pic"
+					mediatemp = [];
 					try {
-						//niconico
-						let regnico = body.match(/http:\/\/www.nicovideo.jp\/watch\/(\w)+/i)
-						if (regnico[0].split("watch/")[1]) {
-							temp[8] = "niconico"
-							temp[9] = regnico[0].split("watch/")[1]
+						mediatemp.push(data.extended_entities.media[0].media_url_https)
+					} catch (e) {
+					}
+					try {
+						mediatemp.push(data.extended_entities.media[1].media_url_https)
+					} catch (e) {
+					}
+					try {
+						mediatemp.push(data.extended_entities.media[2].media_url_https)
+					} catch (e) {
+					}
+					try {
+						mediatemp.push(data.extended_entities.media[3].media_url_https)
+					} catch (e) {
+					}
+				}
+			} catch (e) {
+			}
+
+			try {
+				if (data.extended_entities.media[0].type == "video") {
+					temp[6] = "video"
+					mediatemp = data.extended_entities.media[0].video_info.variants[0].url
+				}
+			} catch (e) {
+			}
+
+			temp.push(mediatemp)
+			temp.push(undefined)
+			temp.push(undefined)
+			//リンクがあるか
+			let reg = data.text.match(/https:\/\/t.co\/(\w)+/i)
+			if (reg != null) {
+				webclient.get({
+					url: reg[0]
+				}, function (error, response, body) {
+					try {
+						let regyoutube = body.match(/https:\/\/www.youtube.com\/watch\?v=(-|\w)+/i)
+						if (regyoutube[0].split("v=")[1] != null) {
+							temp[8] = "youtube"
+							temp[9] = regyoutube[0].split("v=")[1]
 						}
 						makeDom(temp)
 					} catch (e) {
-						makeDom(temp)
+						try {
+							//niconico
+							let regnico = body.match(/http:\/\/www.nicovideo.jp\/watch\/(\w)+/i)
+							if (regnico[0].split("watch/")[1]) {
+								temp[8] = "niconico"
+								temp[9] = regnico[0].split("watch/")[1]
+							}
+							makeDom(temp)
+						} catch (e) {
+							makeDom(temp)
+						}
 					}
-				}
-			});
+				});
+
+			} else {
+				makeDom(temp)
+			}
 
 		} else {
-			makeDom(temp)
-		}
-
-		}else{
-			if(data.retweeted_status.user.screen_name==mydata.screen_name){
+			if (data.retweeted_status.user.screen_name == mydata.screen_name) {
 				//被RT
 				new Notification("RT", { body: `by:${data.user.name} @${data.user.screen_name} target:${data.retweeted_status.user.name} @${data.retweeted_status.user.screen_name}\r\n${data.retweeted_status.text}` });
-			}else{
+			} else {
 				//関係ないRT
 				let temp = []
 				temp.push(data.retweeted_status.user.name)
@@ -388,7 +413,7 @@ key.stream('user', function (stream) {
 				temp.push(undefined)
 				temp.push(`RT by:@${data.user.screen_name} ${data.user.name}`)
 				let mediatemp
-		
+
 				try {
 					if (data.extended_entities.media[0].type == "photo") {
 						temp[6] = "pic"
@@ -412,7 +437,7 @@ key.stream('user', function (stream) {
 					}
 				} catch (e) {
 				}
-		
+
 				try {
 					if (data.extended_entities.media[0].type == "video") {
 						temp[6] = "video"
@@ -420,8 +445,8 @@ key.stream('user', function (stream) {
 					}
 				} catch (e) {
 				}
-		
-				temp[7]=mediatemp
+
+				temp[7] = mediatemp
 
 				let reg = data.text.match(/https:\/\/t.co\/(\w)+/i)
 				if (reg != null) {
@@ -449,7 +474,7 @@ key.stream('user', function (stream) {
 							}
 						}
 					});
-		
+
 				} else {
 					makeDom(temp)
 				}

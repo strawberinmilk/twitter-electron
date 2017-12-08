@@ -1,7 +1,7 @@
 body {
 background-color: rgb(137, 214, 224);
 width : 100%;
-overflow-x: hidden; 
+/*overflow-x: hidden; */
 }
 .tweetarea{
   background-color: rgba(0, 0, 255, 0.5);
@@ -31,6 +31,7 @@ overflow-x: hidden;
   background-color: rgb(170, 186, 255);
   width: calc(100% - 220px);
   margin : 10px;
+  word-wrap: break-word;
 }
 
 .profile{
@@ -39,11 +40,6 @@ overflow-x: hidden;
 }
 .pic{
   height: 130px;
-  background-color: red;
-}
-.pica:hover{
-  height: auto;
-  width: 100%;
 }
 .picclick{
   width:100%;
