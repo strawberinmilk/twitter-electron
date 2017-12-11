@@ -31,10 +31,6 @@ function makeDom(tltext) {
 	let rt = document.createElement("button");
 	let fav = document.createElement("button");
 	let copy = document.createElement("button");
-	let img1 = document.createElement("img");
-	let img2 = document.createElement("img");
-	let img3 = document.createElement("img");
-	let img4 = document.createElement("img");
 	let youtube = document.createElement("p");
 	let video = document.createElement("video");
 
@@ -58,75 +54,27 @@ function makeDom(tltext) {
 	//画像orビデオ
 	switch (tltext[6]) {
 		case "pic":
+		
 			let pictemp = tltext[7]
 
-			if (pictemp[0]) {
-				img1.src = pictemp[0]
-				img1.className = "pic"
-				img1.onclick = function () {
-					if (img1.classList.contains("pic")) {
-						img1.className = "video2"
-					} else {
-						if (img1.classList.contains("video2")) {
-							img1.className = "video3"
+			for (let i=0;i<4;i++){
+				if (pictemp[i]) {
+					let domimg = document.createElement("img");
+					domimg.src = pictemp[i]
+					domimg.className = "pic"
+					domimg.onclick = function () {
+						if (domimg.classList.contains("pic")) {
+							domimg.className = "video2"
 						} else {
-							img1.className = "pic"
+							if (domimg.classList.contains("video2")) {
+								domimg.className = "video3"
+							} else {
+								domimg.className = "pic"
+							}
 						}
 					}
+					div.appendChild(domimg);
 				}
-				div.appendChild(img1);
-			}
-			if (pictemp[1]) {
-				img2.src = pictemp[1]
-				img2.className = "pic"
-				img2.onclick = function () {
-					if (img2.classList.contains("pic")) {
-						img2.className = "video2"
-					} else {
-						if (img2.classList.contains("video2")) {
-							img2.className = "video3"
-						} else {
-							img2.className = "pic"
-						}
-					}
-				}
-				div.appendChild(img2);
-
-			}
-			if (pictemp[2]) {
-				img3.src = pictemp[2]
-				img3.className = "pic"
-				img3.onclick = function () {
-					if (img3.classList.contains("pic")) {
-						img3.className = "video2"
-					} else {
-						if (img3.classList.contains("video2")) {
-							img3.className = "video3"
-						} else {
-							img3.className = "pic"
-						}
-					}
-				}
-				div.appendChild(img3);
-
-
-			}
-			if (pictemp[3]) {
-				img4.src = pictemp[3]
-				img4.className = "pic"
-				img4.onclick = function () {
-					if (img4.classList.contains("pic")) {
-						img4.className = "video2"
-					} else {
-						if (img4.classList.contains("video2")) {
-							img4.className = "video3"
-						} else {
-							img4.className = "pic"
-						}
-					}
-				}
-				div.appendChild(img4);
-
 			}
 			break;
 		case "video":
