@@ -261,12 +261,27 @@ function sendTweet() {
 	}
 }
 
+//通知
+function notice (data){
+	//new Notification(data[0], { body: data[1] })
+	let newnotice = document.getElementById("newnotice")
+	let div = document.createElement('div');
+	div.innerHTML =  `${data[0]}<br>${data[1]}`
+	newnotice.insertBefore(document.createElement("br"), newnotice.firstChild);
+	newnotice.insertBefore(div, newnotice.firstChild);
+	document.getElementById("noticename").className = "hilight"
+	setTimeout(noticereturn,500);
+}
+function noticereturn(){
+	document.getElementById("noticename").className = "noclass"
+}
+
 
 //認証試験
 let mydata
 key.get("account/verify_credentials", function (error, data) {
 	mydata = data
-	new Notification("認証成功", { body: `@${data.screen_name} ${data.name}` })
+	notice(["認証成功",`@${data.screen_name} ${data.name}`])
 })
 
 
@@ -361,7 +376,7 @@ key.stream('user', function (stream) {
 		} else {
 			if (data.retweeted_status.user.screen_name == mydata.screen_name) {
 				//被RT
-				new Notification("RT", { body: `by:${data.user.name} @${data.user.screen_name} target:${data.retweeted_status.user.name} @${data.retweeted_status.user.screen_name}\r\n${data.retweeted_status.text}` });
+				notice(["RT",`by:${data.user.name} @${data.user.screen_name} target:${data.retweeted_status.user.name} @${data.retweeted_status.user.screen_name}\r\n${data.retweeted_status.text}`]);
 			} else {
 				//関係ないRT
 				let temp = []
@@ -456,26 +471,26 @@ key.stream('user', function (stream) {
 			case "favorite":
 			case "unfavorite":
 				eventreturn = `by: ${data.source.name} @${data.source.screen_name}\ntarget: ${data.target_object.text}`
-				new Notification(data.event, { body: eventreturn });
-
+				notice([data.event,eventreturn ]);
+				
 				break;
 
 			case "follow":
 			case "unfollow":
 				eventreturn = data.source.name + "\n" + "@" + data.source.screen_name
-				new Notification(data.event, { body: eventreturn });
-
+				notice([data.event,eventreturn ]);
+				
 				break;
 
 			case "retweeted_retweet":
 				eventreturn = `by ${data.source.name} @${data.source.screen_name} target:${data.target_object.entities.user_mentions[0].name} ${data.target_object.entities.user_mentions[0].screen_name}\n${data.target_object.retweeted_status.text}`;
-				new Notification(data.event, { body: eventreturn });
-
+				notice([data.event,eventreturn ]);
+				
 				break;
 
 
 			default:
-				new Notification(data.event);
+			notice([data.event,"" ]);
 
 				break;
 

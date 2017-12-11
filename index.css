@@ -1,10 +1,11 @@
 body {
 background-color: rgb(137, 214, 224);
 width : 100%;
-/*overflow-x: hidden; */
+overflow-x: hidden; 
 }
 .tweetarea{
   background-color: rgba(0, 0, 255, 0.5);
+  color: white;
   position: fixed;            /* ヘッダーの固定 */
   top: 0px;                   /* 位置(上0px) */
   left: 0px;                  /* 位置(右0px) */
@@ -48,17 +49,22 @@ width : 100%;
   height:auto;
 }
 .video2{
-  width:100vh;
+  width: 100vh;
 }
 .video3{
   height: 100vh;
 }
 
-.notice{
-  background-color: red;
-  height: 100%;
-  width: calc(100% - 220px);
-  position: fixed;
-  top: 0px;                   /* 位置(上0px) */
-  left: 99%;
+.newnotice{
+  background-color: rgba(111, 111, 252, 0.5);
+  word-wrap: break-word;
+  width: 200px; 
+  height: 200px;
+  overflow-x: hidden; 
+  overflow-y: scroll;
+}
+.hilight{
+  background-color: rgb(255, 0, 0);
+}
+.noclass{
 }
