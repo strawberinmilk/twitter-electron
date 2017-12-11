@@ -15,49 +15,48 @@ function escape(str) {
 	str = str.replace(/\r?\n/g, "<br />\n");
 	return str;
 }
-//タグ生成はまとめてここに
+
 let replyid
+
+
 function makeDom(tltext) {
 	let div = document.createElement('div');
 	div.className = "timeline";
-	let profile = document.createElement("div");
-	let icon = document.createElement("img");
-	icon.className = "profile"
-	let text00 = document.createElement("p")
-	let text0 = document.createElement("p");
-	let text1 = document.createElement("p");
-	let text2 = document.createElement("p");
-	let reply = document.createElement("button");
-	let rt = document.createElement("button");
-	let fav = document.createElement("button");
-	let copy = document.createElement("button");
-	let youtube = document.createElement("p");
-	let video = document.createElement("video");
 
+	//RTの場合RTした人を表示
 	if (tltext[10]) {
-		text00.innerHTML = tltext[10];
-		div.appendChild(text00)
+		let rtby = document.createElement("p")
+		rtby.innerHTML = tltext[10];
+		div.appendChild(rtby)
 	}
-	//テキスト生成
+	//アイコン
+	let icon = document.createElement("img");
+	icon.className = "icon"
 	icon.src = `http://furyu.nazo.cc/twicon/${tltext[5]}/bigger`
-	text0.innerHTML = `${escape(tltext[0])}<br>@${escape(tltext[5])}<br clear="left">`;
-	text1.innerHTML = escape(tltext[1]);
-	text2.innerHTML = escape(tltext[2]);
-	text2.innerHTML += "<br>";
-	text2.innerHTML += escape(tltext[3]);
-
 	div.appendChild(icon);
-	div.appendChild(text0);
-	div.appendChild(text1);
-	div.appendChild(text2);
+
+	//IDとかハンネ
+	let profile = document.createElement("p");
+	profile.innerHTML = `${escape(tltext[0])}<br>@${escape(tltext[5])}<br clear="left">`;
+	div.appendChild(profile);
+	//本文
+	let maintext = document.createElement("p");
+	maintext.innerHTML = escape(tltext[1]);
+	div.appendChild(maintext);
+	//データとか
+	let tweetdata = document.createElement("p");
+	tweetdata.innerHTML = escape(tltext[2]);
+	tweetdata.innerHTML += "<br>";
+	tweetdata.innerHTML += escape(tltext[3]);
+	div.appendChild(tweetdata);
+	
+
 
 	//画像orビデオ
 	switch (tltext[6]) {
 		case "pic":
-		
 			let pictemp = tltext[7]
-
-			for (let i=0;i<4;i++){
+			for (let i = 0; i < 4; i++) {
 				if (pictemp[i]) {
 					let domimg = document.createElement("img");
 					domimg.src = pictemp[i]
@@ -78,6 +77,7 @@ function makeDom(tltext) {
 			}
 			break;
 		case "video":
+			let video = document.createElement("video");
 			video.src = tltext[7];
 			video.setAttribute("controls", "");
 			video.className = "video1";
@@ -99,6 +99,7 @@ function makeDom(tltext) {
 
 	//再生画面生成、IDだけもらってくるよ
 	if (tltext[8] == "youtube") {
+		let youtube = document.createElement("p");	
 		youtube.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${tltext[9]}" frameborder="0" allowfullscreen></iframe>`
 		div.appendChild(youtube)
 	}
@@ -107,9 +108,24 @@ function makeDom(tltext) {
 		niconico.src = `https://embed.nicovideo.jp/watch/${tltext[9]}/script?w=640&h=360`
 		div.appendChild(niconico)
 	}
-
+	
+	/*
+	if(tltext[8] == "url"){
+		let domurl = document.createElement("a");
+		domurl.innerHTML = "test"
+		domurl.href = tltext[9]
+		domurl.target = "_blank"
+		div.appendChild(domurl)
+	}
+	*/
+	
 
 	//ボタン生成
+	let reply = document.createElement("button");
+	let rt = document.createElement("button");
+	let fav = document.createElement("button");
+	let copy = document.createElement("button");
+
 	reply.innerHTML = "reply";
 	reply.onclick = function () {
 		document.getElementById("posttweettext").value = "@" + escape(tltext[5]) + " "
@@ -171,9 +187,9 @@ function makeDom(tltext) {
 	}
 }
 //テスト用
-//makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"]])
+makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"],"url","https://www.google.com"])
 //makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4", "youtube", "bUc5bpOSFqA"])
-makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4", "youtube", "bUc5bpOSFqA"])
+//makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4", "youtube", "bUc5bpOSFqA"])
 
 const twitter = require("twitter")
 const fs = require("fs")
@@ -198,7 +214,7 @@ document.onkeydown = function (e) {
 		sendTweet()
 	}
 	setTimeout(() => {
-	document.getElementById("textnumber").innerHTML = 140-document.getElementById("posttweettext").value.length;	
+		document.getElementById("textnumber").innerHTML = 140 - document.getElementById("posttweettext").value.length;
 	}, 5);
 }
 
@@ -274,7 +290,7 @@ key.stream('user', function (stream) {
 			temp.push(data.user.screen_name)
 			temp.push(undefined)
 			let mediatemp
-//メディアがあるか
+			//メディアがあるか
 			try {
 				if (data.extended_entities.media[0].type == "photo") {
 					temp[6] = "pic"
