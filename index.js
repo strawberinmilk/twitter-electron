@@ -187,18 +187,58 @@ function makeDom(tltext) {
 	}
 }
 //テスト用
-makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"],"url","https://www.google.com"])
+//makeDom(["username", "text", "via", "time", "id", "krt6006" ,"pic",[ "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg", "https://pbs.twimg.com/media/DPiJl1QVQAAQrhQ.jpg"],"url","https://www.google.com"])
 //makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4", "youtube", "bUc5bpOSFqA"])
 //makeDom(["username", "text", "via", "time", "id", "krt6006", "video", "https://video.twimg.com/ext_tw_video/936016211816497152/pu/vid/180x320/v29_p8YnUiPvQ7hh.mp4", "youtube", "bUc5bpOSFqA"])
 
+
+const dialog = require('electron').dialog;
+
+const OauthTwitter = require('electron-oauth-twitter');
+
+const otwitter = new OauthTwitter({
+  key   : "VIlYC8hVZpzw7t7sQsjfcW2T2",
+  secret: "Am0nPKFskCRrRMKFVDwm88YI06RfhTDVS71CUSZ1saQHcxbvjm",
+});
+
+otwitter.startRequest().then((result) => {
+ dialog.showErrorBox('Status', 'Token: ' + result.oauth_access_token + '\nSecret: ' + result.oauth_access_token_secret);
+	window.alert(result)
+	window.alert("aaa")
+}).catch((error) => {
+	window.alert(error)
+	window.alert("bbb");
+});
+
+
 const twitter = require("twitter")
 const fs = require("fs")
-let key = fs.readFileSync(__dirname + "/key.txt", "utf8");
+//let key = fs.readFileSync(__dirname + "/key.txt", "utf8");
+let key = fs.readFileSync("./key.txt", "utf8");
+key = key.split(",");
+/////
+/*
+const storage = require('electron-json-storage');
+var data = { // 仮のJSONデータの材料
+	consumer_key: key[0],
+	consumer_secret: key[1],
+	access_token_key: key[2],
+	access_token_secret: key[3]
+};
+storage.set('key.json', data, function (error) {　// 書き出し（sample/config.jsonとディレクトリを指定することも可能）
+    if (error) throw error;
+});
+storage.get('key.json', function(error, data) { // 読み込みしてHTMLに書き出す
+		if (error) throw error;
+		window.alert(data.consumer_key)
+		window.alert(data.consumer_secret)
+	});
+	*/
+/////
 if (key === "") {
 	window.alert("https://apps.twitter.com/ からapi-keyを取得し,keyset.jsを使用してキーを登録してください。");
 	process.exit();
 } else {
-	key = key.split(",");
 	key = new twitter({
 		consumer_key: key[0],
 		consumer_secret: key[1],
