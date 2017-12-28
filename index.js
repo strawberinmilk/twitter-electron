@@ -360,7 +360,9 @@ storage.get('key.json', function (error, data) {
 	key.stream('user', function (stream) {
 
 		stream.on("data", function (data) {
-
+			if (!!data.direct_message) {
+				//TODODM
+			} else {
 			let tmp = data.source;
 			tmp = tmp.split('">');
 			tmp = tmp[1].split('</a>');
@@ -530,6 +532,7 @@ storage.get('key.json', function (error, data) {
 					}
 				}
 			}
+		}
 		})//stream on
 		let eventreturn = "a"
 		stream.on("event", function (data) {
